@@ -9,6 +9,7 @@ class SaveAcc(Account):
     def prt_init(self):
         print("%s님의 계좌 잔액은 %d원입니다."%(self.owner,self.acc_money))
         print("이자율: %d" %self.interest_r,"%")
+        
     
     def save(self,save_m):
         if(save_m>=0):
@@ -17,6 +18,7 @@ class SaveAcc(Account):
             interest=self.acc_money*self.interest_r*0.01
             self.acc_money += interest
             print("%s님의 계좌에 %d원의 이자가 추가되었습니다."%(self.owner,interest))
+
 
 my_acc = SaveAcc("sae2",1000,5)
 my_acc.prt_init()
