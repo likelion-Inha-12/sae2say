@@ -1,4 +1,4 @@
 db.sqlite3
-vir_env_0401
+seminarenv
 migrations
-.DS_Store
+__pycache__
