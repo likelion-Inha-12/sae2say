@@ -79,8 +79,9 @@ def like(request, post_id, user_id):
         post.save()
 
         return JsonResponse({}, status=204 )
-    return JsonResponse({'message' : '좋아요 반영에 실패하였습니다.'}, status=404)
+    return JsonResponse({'message' : '좋아요 반영에 실패하였습니다.'}, status=400)
 
+'''
 def addUser(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -95,6 +96,7 @@ def addUser(request):
         user.save()
         return JsonResponse({'message':'success'})
     return JsonResponse({'message':'POST 요청만 허용됩니다.'})
+
 
 def createComment(request,post_id,user_id):
     if request.method == 'POST':
@@ -113,8 +115,7 @@ def createComment(request,post_id,user_id):
         comment.save()
         return JsonResponse({'message':'success'})
     return JsonResponse({'message':'POST 요청만 허용됩니다.'})
-
-
+'''
 
 def return_like(request, post_id):
     if request.method == 'GET':
