@@ -19,8 +19,8 @@ def create_post_v2(request):
     post.save()
 
     message = f"id: {post.pk}번 포스트 생성 성공"
-    return Response(data = None, message = message, status = status.HTTP_201_CREATED)
-
+    data = {'message': message}
+    return Response(data=data, status=status.HTTP_201_CREATED)
 
 def get_post(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -48,9 +48,9 @@ class PostApiView(APIView):
     def delete(self, request, pk):
         post = self.get_object(pk)
         post.delete()
-        
+        data=[]
         message = f"id: {pk}번 포스트 삭제 성공"
-        return api_response(message = message, status = status.HTTP_200_OK)
+        return api_response(data=data, message = message, status = status.HTTP_200_OK)
 
 def delete_post(request, pk):
     if request.method == 'DELETE':
