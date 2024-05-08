@@ -3,21 +3,24 @@ from django.http import JsonResponse
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from .models import *
+from rest_framework.response import Response
+from rest_framework import status
+from util.views import api_response
+from .serializers import PostSerializer
+from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 
-def create_post(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
+@api_view(['POST'])
+def create_post_v2(request):
+    post = Post(
+        title = request.data.get('title'),
+        content = request.data.get('content')
+    )
+    post.save()
 
-        title = data.get('title')
-        content = data.get('content')
+    message = f"id: {post.pk}번 포스트 생성 성공"
+    return Response(data = None, message = message, status = status.HTTP_201_CREATED)
 
-        post = Post(
-            title = title,
-            content = content
-        )
-        post.save()
-        return JsonResponse({'message':'success'})
-    return JsonResponse({'message':'POST 요청만 허용됩니다.'})
 
 def get_post(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -28,6 +31,26 @@ def get_post(request, pk):
         '메시지' : '조회 성공'
     }
     return JsonResponse(data, status=200)
+
+class PostApiView(APIView):
+
+    def get_object(self, pk):
+        post = get_object_or_404(Post, pk=pk)
+        return post
+
+    def get(self, request, pk):
+        post = self.get_object(pk)
+
+        postSerializer = PostSerializer(post)
+        message = f"id: {post.pk}번 포스트 조회 성공"
+        return api_response(data = postSerializer.data, message = message, status = status.HTTP_200_OK)
+    
+    def delete(self, request, pk):
+        post = self.get_object(pk)
+        post.delete()
+        
+        message = f"id: {pk}번 포스트 삭제 성공"
+        return api_response(message = message, status = status.HTTP_200_OK)
 
 def delete_post(request, pk):
     if request.method == 'DELETE':
