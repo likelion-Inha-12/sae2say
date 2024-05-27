@@ -9,9 +9,29 @@ from util.views import api_response
 from .serializers import PostSerializer
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework.decorators import authentication_classes
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
+
+@swagger_auto_schema(
+        method="POST",
+        tags=["첫번째 view"],
+        operation_summary="post 생성",
+        operation_description="post를 생성합니다.",
+        responses={
+            201 : '201에 대한 설명',
+            400 : '400에 대한 설명',
+            500 : '500에 대한 설명'
+        }
+)
+
+@authentication_classes([JWTAuthentication])
 @api_view(['POST'])
 def create_post_v2(request):
+
+    authentication_classes = [JWTAuthentication]
+    
     post = Post(
         title = request.data.get('title'),
         content = request.data.get('content')
@@ -21,16 +41,6 @@ def create_post_v2(request):
     message = f"id: {post.pk}번 포스트 생성 성공"
     data = {'message': message}
     return Response(data=data, status=status.HTTP_201_CREATED)
-
-def get_post(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    data = {
-        'id' : post.pk,
-        '제목' : post.title,
-        '내용' : post.content,
-        '메시지' : '조회 성공'
-    }
-    return JsonResponse(data, status=200)
 
 class PostApiView(APIView):
 
@@ -52,23 +62,19 @@ class PostApiView(APIView):
         message = f"id: {pk}번 포스트 삭제 성공"
         return api_response(data=data, message = message, status = status.HTTP_200_OK)
 
-def delete_post(request, pk):
-    if request.method == 'DELETE':
-        post = get_object_or_404(Post, pk=pk)
-        post.delete()
-        data = {
-            "messge":f"id: {pk} 포스트 삭제 완료"
-        }
-        return JsonResponse(data, status=200)
-    return JsonResponse({'message':'DELETE 요청만 허용합니다.'})
 
+@authentication_classes([JWTAuthentication])
+@api_view(['GET'])
 def get_comment(request, post_id):
     if request.method == 'GET':
         post = get_object_or_404(Post, pk=post_id)
         comment_list = post.comments.all()
         #    post_id = models.ForeignKey(Post, verbose_name="Post", on_delete=models.CASCADE, related_name="comments")
-        return HttpResponse(comment_list, status=200)
-    
+        return Response(comment_list, status=200)
+
+
+@authentication_classes([JWTAuthentication])
+@api_view(['GET'])   
 def like(request, post_id, user_id):
     if request.method == 'PUT':
         user=get_object_or_404(Member, pk=user_id)
